@@ -1,0 +1,47 @@
+{
+  "name": "@vgerbot/rock",
+  "version": "1.0.0",
+  "description": "A state management library for SolidJS, Rockjs leverages the power of Inversion of Control (IoC) to provide a robust and flexible solution. With a primary focus on promoting the separation of UI and logic, rockjs empowers SolidJS developers to achieve cleaner, more maintainable code.",
+  "author": "y1j2x34 <y1j2x34@qq.com>",
+  "homepage": "https://github.com/vgerbot-libraries/rock/tree/main/packages/core#readme",
+  "license": "MIT",
+  "main": "lib/index.cjs.js",
+  "browser": "lib/index.umd.js",
+  "module": "lib/index.es.js",
+  "exports": {
+    ".": {
+      "import": "./lib/index.es.js",
+      "browser": "./lib/index.umd.js",
+      "require": "./lib/index.cjs.js"
+    }
+  },
+  "library": "Rock",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vgerbot-libraries/rock.git"
+  },
+  "scripts": {},
+  "bugs": {
+    "url": "https://github.com/vgerbot-libraries/rock/issues"
+  },
+  "dependencies": {
+    "@vgerbot/ioc": "^1.0.0-alpha.4",
+    "solid-js": "^1.8.7"
+  },
+  "peerDependencies": {
+    "solid-js": ">=1.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.5"
+  }
+}
