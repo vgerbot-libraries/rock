@@ -1,4 +1,4 @@
-import { package as pkg } from './base.mjs';
+import { pkg } from './base.mjs';
 
 if (pkg.scripts && pkg.scripts.test) {
     await $`cross-env NODE_ENV=test npm t`;

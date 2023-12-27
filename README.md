@@ -7,7 +7,7 @@ A monorepo starter template for building TypeScript projects using Learna, Rollu
 To get started, clone the repository and install the dependencis using npm.
 
 ```bash
-git clone https://github.com/y1j2x34/rollup-jest-boilerplate.git --branch monorepo
+git clone https://github.com/vgerbot-libraries/rock.git --branch monorepo
 cd rollup-jest-boilerplate
 npm install
 ```

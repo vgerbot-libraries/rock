@@ -7,8 +7,10 @@
         },
         "types": [
             "jest"
-        ]
+        ],
+        "jsx": "preserve",
+        "jsxImportSource": "solid-js",
     },
     "exclude": ["node_modules"],
-    "include": ["**/__tests__/**/*.ts"]
+    "include": ["**/__tests__/**/*.ts", "**/__tests__/**/*.tsx"]
 }

@@ -13,7 +13,10 @@ export default {
         ]
     },
     testEnvironment: 'jsdom',
-    testMatch: [`${basedir}/__tests__/**/*.spec.ts`],
+    testMatch: [
+        `${basedir}/__tests__/**/*.spec.ts`,
+        `${basedir}/__tests__/**/*.spec.tsx`
+    ],
     moduleFileExtensions: ['ts', 'js'],
     collectCoverage: true,
     collectCoverageFrom: [`${basedir}/src/**/*.ts`],

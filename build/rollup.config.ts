@@ -3,7 +3,7 @@ import path from 'path';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 // const { nodeResolve } = require('@rollup/plugin-node-resolve');
 import commonjs from '@rollup/plugin-commonjs';
-import typescript from 'rollup-plugin-typescript2';
+import babel from '@rollup/plugin-babel';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkg = require(path.resolve(process.cwd(), 'package.json'));
@@ -16,19 +16,28 @@ const outputConfig = [
     [pkg.main, 'cjs']
 ].map(confs => createOutputConfig(confs[0], confs[1]));
 
+const extensions = ['.ts', '.tsx', '.js', '.jsx'];
+
 const rollupConfig: RollupOptions = {
     output: outputConfig,
     input: inputFile,
     plugins: [
         nodeResolve({
-            mainFields: ['module', 'browser', 'main']
+            mainFields: ['module', 'browser', 'main'],
+            extensions
         }),
         commonjs({
             include: 'node_modules/**',
             ignore: [],
-            sourceMap: false
+            sourceMap: false,
+            extensions
         }),
-        typescript()
+        babel({
+            extensions,
+            babelHelpers: 'bundled',
+            presets: ['solid', '@babel/preset-typescript'],
+            exclude: /node_modules\//
+        })
     ],
     external: new RegExp('node_modules|' + pkg.name)
 };
