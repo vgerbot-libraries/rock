@@ -5,23 +5,115 @@ import {
     MemberKey,
     Newable
 } from '@vgerbot/ioc';
-import { AUTO_SIGNAL_MARK_KEY, SIGNAL_MARK_KEY } from './annotations';
+import {
+    OBSERVE_PROPERTY_MARK_KEY,
+    ObserveOptions,
+    SIGNAL_MARK_KEY
+} from './annotations';
 import { SignalMap } from './SignalMap';
+import { Accessor, createEffect, getOwner, runWithOwner } from 'solid-js';
 
+const RECORD_ACCESSOR_SYMBOL = Symbol('rock-record-accessor');
+
+function noop() {
+    // PASS
+}
 export class RockIoCInstanceAwareProcessor
     implements PartialInstAwareProcessor
 {
     beforeInstantiation<T>(constructor: Newable<T>): void | T | undefined {
         const metadata = ClassMetadata.getInstance(constructor).reader();
-        const ctorMarkInfo = metadata.getCtorMarkInfo();
-        const isAutoSignalClass = !!ctorMarkInfo[AUTO_SIGNAL_MARK_KEY];
+        const members = metadata.getAllMarkedMembers();
+        this.defineSignalProperties<T>(members, metadata, constructor);
+        this.overrideObservers<T>(members, metadata, constructor);
+        constructor.prototype[RECORD_ACCESSOR_SYMBOL] = noop;
+    }
+    afterInstantiation<T extends object>(instance: T): T {
+        const constructor = instance.constructor as Newable<T>;
+        
+        return instance;
+    }
 
-        if (isAutoSignalClass) {
-            return;
-        } else {
-            const members = metadata.getAllMarkedMembers();
-            this.defineSignalProperties<T>(members, metadata, constructor);
-        }
+    private overrideObservers<T>(
+        members: Set<MemberKey>,
+        metadata: ClassMetadataReader<unknown>,
+        constructor: Newable<T>
+    ) {
+        members.forEach(key => {
+            const markInfo = metadata.getMembersMarkInfo(key);
+            const observeOptions = markInfo[OBSERVE_PROPERTY_MARK_KEY] as
+                | ObserveOptions
+                | undefined;
+            if (!observeOptions) {
+                return;
+            }
+            const originalMethod = constructor.prototype[key] as (
+                ...args: unknown[]
+            ) => unknown;
+            const accessors = new Set<Accessor<unknown>>();
+            const recordAccessor = (accessor: Accessor<unknown>) => {
+                accessors.add(accessor);
+            };
+            const recover = () => {
+                Object.defineProperty(constructor.prototype, key, {
+                    value: originalMethod
+                });
+            };
+            const simplify = () => {
+                Object.defineProperty(constructor.prototype, key, {
+                    value: function (this: T, ...args: unknown[]): unknown {
+                        try {
+                            return originalMethod.apply(this, args);
+                        } finally {
+                            accessors.forEach(accessor => {
+                                accessor();
+                            });
+                        }
+                    }
+                });
+            };
+            const owner = getOwner();
+            Object.defineProperty(constructor.prototype, key, {
+                value: function (this: T, ...args: unknown[]): unknown {
+                    const context = new Proxy(
+                        this as Record<string | symbol, unknown>,
+                        {
+                            get: function (target, key) {
+                                if (key === 'recordAccessor') {
+                                    return recordAccessor;
+                                }
+                                return target[key];
+                            }
+                        }
+                    );
+                    let ret: unknown;
+                    try {
+                        ret = originalMethod.apply(context, args);
+                        return ret;
+                    } finally {
+                        if (
+                            !!ret &&
+                            typeof ret === 'object' &&
+                            typeof (ret as PromiseLike<unknown>).then ===
+                                'function'
+                        ) {
+                            if (observeOptions.collectOnce) {
+                                simplify();
+                            }
+                        } else {
+                            recover();
+                        }
+                    }
+                    runWithOwner(owner, () => {
+                        createEffect(() => {
+                            accessors.forEach(accessor => {
+                                accessor();
+                            });
+                        });
+                    });
+                }
+            });
+        });
     }
 
     private defineSignalProperties<T>(
@@ -49,6 +141,7 @@ export class RockIoCInstanceAwareProcessor
                 Object.defineProperty(constructor.prototype, key, {
                     get: function () {
                         const [get] = signalsMap.get(this, key);
+                        this[RECORD_ACCESSOR_SYMBOL].call(this, get);
                         return get();
                     },
                     set: function (value: unknown) {

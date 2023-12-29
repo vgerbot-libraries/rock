@@ -74,6 +74,7 @@
     "homepage": "https://github.com/vgerbot-libraries/rock#readme",
     "packageManager": "yarn@1.22.19",
     "workspaces": [
-        "packages/*"
+        "packages/*",
+        "packages/examples/*"
     ]
 }
