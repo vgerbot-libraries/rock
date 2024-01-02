@@ -7,7 +7,6 @@ export const Signal = Mark(SIGNAL_MARK_KEY, true) as PropertyDecorator;
 
 export type ObserveOptions = {
     collectOnce?: boolean;
-    defer?: boolean;
 };
 
 export const Observe = (options: ObserveOptions = { collectOnce: false }) =>

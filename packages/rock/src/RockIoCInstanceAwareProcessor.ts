@@ -11,9 +11,14 @@ import {
     SIGNAL_MARK_KEY
 } from './annotations';
 import { SignalMap } from './SignalMap';
-import { Accessor, createEffect, getOwner, runWithOwner } from 'solid-js';
+import { createEffect, getOwner, runWithOwner } from 'solid-js';
+import { store } from './store-result';
 
 const RECORD_ACCESSOR_SYMBOL = Symbol('rock-record-accessor');
+
+interface ObserverableObject {
+    [key: MemberKey]: () => unknown;
+}
 
 function noop() {
     // PASS
@@ -25,97 +30,37 @@ export class RockIoCInstanceAwareProcessor
         const metadata = ClassMetadata.getInstance(constructor).reader();
         const members = metadata.getAllMarkedMembers();
         this.defineSignalProperties<T>(members, metadata, constructor);
-        this.overrideObservers<T>(members, metadata, constructor);
         constructor.prototype[RECORD_ACCESSOR_SYMBOL] = noop;
     }
     afterInstantiation<T extends object>(instance: T): T {
         const constructor = instance.constructor as Newable<T>;
-        
-        return instance;
-    }
-
-    private overrideObservers<T>(
-        members: Set<MemberKey>,
-        metadata: ClassMetadataReader<unknown>,
-        constructor: Newable<T>
-    ) {
-        members.forEach(key => {
-            const markInfo = metadata.getMembersMarkInfo(key);
-            const observeOptions = markInfo[OBSERVE_PROPERTY_MARK_KEY] as
-                | ObserveOptions
-                | undefined;
-            if (!observeOptions) {
-                return;
-            }
-            const originalMethod = constructor.prototype[key] as (
-                ...args: unknown[]
-            ) => unknown;
-            const accessors = new Set<Accessor<unknown>>();
-            const recordAccessor = (accessor: Accessor<unknown>) => {
-                accessors.add(accessor);
-            };
-            const recover = () => {
-                Object.defineProperty(constructor.prototype, key, {
-                    value: originalMethod
-                });
-            };
-            const simplify = () => {
-                Object.defineProperty(constructor.prototype, key, {
-                    value: function (this: T, ...args: unknown[]): unknown {
-                        try {
-                            return originalMethod.apply(this, args);
-                        } finally {
-                            accessors.forEach(accessor => {
-                                accessor();
-                            });
-                        }
-                    }
-                });
-            };
-            const owner = getOwner();
-            Object.defineProperty(constructor.prototype, key, {
-                value: function (this: T, ...args: unknown[]): unknown {
-                    const context = new Proxy(
-                        this as Record<string | symbol, unknown>,
-                        {
-                            get: function (target, key) {
-                                if (key === 'recordAccessor') {
-                                    return recordAccessor;
-                                }
-                                return target[key];
-                            }
-                        }
+        const metadata = ClassMetadata.getInstance(constructor).reader();
+        const members = metadata.getAllMarkedMembers();
+        const observerMembers = Array.from(members)
+            .map(key => {
+                const markInfo = metadata.getMembersMarkInfo(key);
+                const observeOptions = markInfo[OBSERVE_PROPERTY_MARK_KEY] as
+                    | ObserveOptions
+                    | undefined;
+                return observeOptions ? [key, observeOptions] : undefined;
+            })
+            .filter(Boolean) as Array<[MemberKey, ObserveOptions]>;
+        if (observerMembers.length < 1) {
+            return instance;
+        }
+        const owner = getOwner();
+        runWithOwner(owner, () => {
+            observerMembers.forEach(([key]) => {
+                createEffect(() => {
+                    const ret = (instance as ObserverableObject)[key].call(
+                        instance
                     );
-                    let ret: unknown;
-                    try {
-                        ret = originalMethod.apply(context, args);
-                        return ret;
-                    } finally {
-                        if (
-                            !!ret &&
-                            typeof ret === 'object' &&
-                            typeof (ret as PromiseLike<unknown>).then ===
-                                'function'
-                        ) {
-                            if (observeOptions.collectOnce) {
-                                simplify();
-                            }
-                        } else {
-                            recover();
-                        }
-                    }
-                    runWithOwner(owner, () => {
-                        createEffect(() => {
-                            accessors.forEach(accessor => {
-                                accessor();
-                            });
-                        });
-                    });
-                }
+                    store(instance, key, ret);
+                });
             });
         });
+        return instance;
     }
-
     private defineSignalProperties<T>(
         members: Set<MemberKey>,
         metadata: ClassMetadataReader<unknown>,
