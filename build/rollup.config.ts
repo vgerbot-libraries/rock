@@ -4,6 +4,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 // const { nodeResolve } = require('@rollup/plugin-node-resolve');
 import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
+import typescript from 'rollup-plugin-typescript2';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkg = require(path.resolve(process.cwd(), 'package.json'));
@@ -14,7 +15,9 @@ const outputConfig = [
     [pkg.browser, 'umd'],
     [pkg.module, 'es'],
     [pkg.main, 'cjs']
-].map(confs => createOutputConfig(confs[0], confs[1]));
+]
+    .filter(it => !!it[0])
+    .map(confs => createOutputConfig(confs[0], confs[1]));
 
 const extensions = ['.ts', '.tsx', '.js', '.jsx'];
 
@@ -31,6 +34,10 @@ const rollupConfig: RollupOptions = {
             ignore: [],
             sourceMap: false,
             extensions
+        }),
+        typescript({
+            exclude: 'node_modules/**',
+            tsconfig: path.resolve(process.cwd(), 'tsconfig.json')
         }),
         babel({
             extensions,

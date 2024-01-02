@@ -1,9 +1,10 @@
-import { pkg, cwd } from './base.mjs';
+import { pkg, cwd, argv } from './base.mjs';
 
-console.info('cd', cwd);
+const rootDir = argv['root-dir'];
+process.env['ROOT_DIR'] = rootDir;
 
 if (pkg.scripts && pkg.scripts.build) {
     await $`cross-env NODE_ENV=production npm run build`;
 } else {
-    await $`cross-env NODE_ENV=production rollup -c ../../rollup.config.js`;
+    await $`cross-env NODE_ENV=production rollup -c $ROOT_DIR/rollup.config.js`;
 }
