@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@vgerbot/ioc": "^1.0.0-alpha.4",
+    "reflect-metadata": "^0.2.1",
     "solid-js": "^1.8.7"
   },
   "peerDependencies": {
