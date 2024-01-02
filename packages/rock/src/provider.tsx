@@ -5,7 +5,7 @@ import { RockIoCInstanceAwareProcessor } from './RockIoCInstanceAwareProcessor';
 export const IoCContext = createContext<ApplicationContext>();
 
 export type RockProps = ParentProps<{
-    init: (appCtx: ApplicationContext) => void;
+    init?: (appCtx: ApplicationContext) => void;
 }>;
 
 export function Rock(props: RockProps) {
