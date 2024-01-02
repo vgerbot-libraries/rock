@@ -10,7 +10,7 @@ async function rmdir(path) {
     });
 }
 
-const dirs = argv._.slice(1);
+const dirs = argv._;
 
 for (let dir of dirs) {
     await rmdir(dir);

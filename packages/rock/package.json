@@ -31,7 +31,9 @@
     "type": "git",
     "url": "git+https://github.com/vgerbot-libraries/rock.git"
   },
-  "scripts": {},
+  "scripts": {
+    "prebuild": "zx ../../scripts/clear.mjs -- ./lib"
+  },
   "bugs": {
     "url": "https://github.com/vgerbot-libraries/rock/issues"
   },

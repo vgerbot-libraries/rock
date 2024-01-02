@@ -8,18 +8,17 @@
     },
     "scripts": {
         "pretest": "npm run clear -- ./report",
-        "test": "lerna exec -- zx $(pwd)/scripts/test.mjs --root-dir=$(pwd)",
+        "test": "zx ./scripts/run.mjs --script test --target",
         "posttest": "zx ./scripts/merge-coverage.mjs",
         "postinstall": "husky install",
         "release": "standard-version",
         "commit": "commit",
         "lint": "zx ./scripts/lint.mjs",
         "format": "zx ./scripts/format.mjs",
-        "prebuild": "npm run clear -- ./lib",
-        "build": "lerna exec -- zx $(pwd)/scripts/build.mjs --root-dir=$(pwd)",
+        "build": "zx ./scripts/run.mjs --script build --target",
         "pregendoc": "npm run clear -- ./docs",
-        "gendoc": "lerna exec -- zx $(pwd)/scripts/typedoc.mjs --root-dir=$(pwd)",
-        "clear": "lerna exec -- zx $(pwd)/scripts/clear.mjs --root-dir=$(pwd)"
+        "gendoc": "zx ./scripts/run.mjs --script typedoc --target",
+        "clear": "zx ./scripts/run.mjs --script clear --target"
     },
     "repository": {
         "type": "git",
