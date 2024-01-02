@@ -8,7 +8,20 @@ export function store(instance: Object, methodName: MemberKey, value: unknown) {
     set(value);
 }
 
-export function resultOf(instance: Object, methodName: MemberKey) {
-    const [get] = RESULT_MAP.get(instance, methodName);
-    return get;
+type MethodKeys<T> = {
+    [K in keyof T]: T[K] extends (...args: unknown[]) => unknown ? K : never;
+}[keyof T];
+
+type MethodReturnType<T, K extends MethodKeys<T>> = T[K] extends (
+    ...args: unknown[]
+) => unknown
+    ? ReturnType<T[K]>
+    : never;
+
+export function resultOf<T>(
+    instance: T,
+    methodName: MethodKeys<T>
+): MethodReturnType<T, typeof methodName> {
+    const [get] = RESULT_MAP.get(instance as Object, methodName as MemberKey);
+    return get() as MethodReturnType<T, typeof methodName>;
 }

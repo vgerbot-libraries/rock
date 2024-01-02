@@ -6,6 +6,8 @@
         "jsxImportSource": "solid-js",
         "paths": {
             "@/": ["src/"]
-        }
+        },
+        "declarationDir": "lib",
+        "declaration": true
     }
 }

@@ -1,2 +1,4 @@
 export { Rock } from './provider';
-export { Signal } from './annotations';
+export { Signal, Observe } from './annotations';
+export { resultOf } from './store-result';
+export { useService } from './useService';
