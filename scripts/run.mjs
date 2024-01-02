@@ -5,7 +5,7 @@ const args = minimist(process.argv.slice(3));
 
 const target = args.target;
 const script = args.script;
-
+const port = args.port || 10086;
 if (!script) {
     throw new Error('No --script specified');
 }
@@ -13,6 +13,7 @@ if (!script) {
 process.env.ROOT_DIR = path.resolve(__dirname, '..');
 process.env.SCRIPT_NAME = script;
 process.env.FORCE_COLOR = 3;
+process.env.SERVE_PORT = port;
 
 if (typeof target !== 'string' || !target) {
     await $`lerna exec -- zx $ROOT_DIR/scripts/$SCRIPT_NAME.mjs ${args._}`;

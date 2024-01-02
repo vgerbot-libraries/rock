@@ -5,11 +5,18 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 import typescript from 'rollup-plugin-typescript2';
+import html from '@rollup/plugin-html';
+import serve from '@rollup-extras/plugin-serve';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkg = require(path.resolve(process.cwd(), 'package.json'));
 
 const inputFile = path.resolve(process.cwd(), 'src/index.ts');
+
+const isServingExamples =
+    process.env.NODE_ENV === 'development' && pkg.name.indexOf('examples') > -1;
+
+console.log('isServingExamples', isServingExamples);
 
 const outputConfig = [
     [pkg.browser, 'umd'],
@@ -44,9 +51,15 @@ const rollupConfig: RollupOptions = {
             babelHelpers: 'bundled',
             presets: ['solid', '@babel/preset-typescript'],
             exclude: /node_modules\//
-        })
-    ],
-    external: new RegExp('node_modules|' + pkg.name)
+        }),
+        isServingExamples && html(),
+        isServingExamples &&
+            serve({
+                port: Number(process.env.SERVE_PORT),
+                dirs: 'dist'
+            })
+    ].filter(Boolean),
+    external: isServingExamples ? [] : new RegExp('node_modules|' + pkg.name)
 };
 
 export default rollupConfig;

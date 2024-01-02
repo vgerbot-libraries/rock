@@ -16,6 +16,7 @@
         "lint": "zx ./scripts/lint.mjs",
         "format": "zx ./scripts/format.mjs",
         "build": "zx ./scripts/run.mjs --script build --target",
+        "start": "cross-env NODE_ENV=development zx ./scripts/run.mjs --script start --target",
         "pregendoc": "npm run clear -- ./docs",
         "gendoc": "zx ./scripts/run.mjs --script typedoc --target",
         "clear": "zx ./scripts/run.mjs --script clear --target"
@@ -36,8 +37,10 @@
         "@commitlint/config-conventional": "^17.1.0",
         "@commitlint/config-lerna-scopes": "^17.0.2",
         "@commitlint/prompt-cli": "^17.1.2",
+        "@rollup-extras/plugin-serve": "^1.3.5",
         "@rollup/plugin-babel": "^6.0.4",
         "@rollup/plugin-commonjs": "^22.0.2",
+        "@rollup/plugin-html": "^1.0.3",
         "@rollup/plugin-node-resolve": "^14.1.0",
         "@types/jest": "^29.1.1",
         "@typescript-eslint/eslint-plugin": "^5.38.1",
