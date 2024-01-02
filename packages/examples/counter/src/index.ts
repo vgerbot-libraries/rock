@@ -1,4 +1,8 @@
-import { Counter } from './Counter';
+import { App } from './App';
 import { render } from 'solid-js/web';
 
-render(Counter, document.createElement('div'));
+const container = document.createElement('div');
+
+render(App, container);
+
+document.body.appendChild(container);

@@ -9,14 +9,14 @@ export function Counter() {
             <hr></hr>
             <button
                 onClick={() => {
-                    service.count += 1;
+                    service.increment();
                 }}
             >
                 Increment
             </button>
             <button
                 onClick={() => {
-                    service.count -= 1;
+                    service.decrement();
                 }}
             >
                 Decrement

@@ -2,10 +2,17 @@ import { Observe, Signal, resultOf } from '@vgerbot/rock';
 
 export class CounterService {
     @Signal
-    public count: number = 0;
+    private count: number = 0;
 
     public get formated(): string {
         return this.count + '个';
+    }
+
+    increment() {
+        this.count++;
+    }
+    decrement() {
+        this.count--;
     }
 
     @Observe()
