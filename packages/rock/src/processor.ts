@@ -1,5 +1,4 @@
 import {
-    PartialInstAwareProcessor,
     ClassMetadata,
     ClassMetadataReader,
     MemberKey,
@@ -8,26 +7,24 @@ import {
 import {
     OBSERVE_PROPERTY_MARK_KEY,
     ObserveOptions,
-    SIGNAL_MARK_KEY
+    SETTER_INTERCEPTOR_METHOD_MARK_KEY,
+    SIGNAL_MARK_KEY,
+    SetterInterceptorOptions
 } from './annotations';
 import { SignalMap } from './SignalMap';
 import { createEffect, getOwner, runWithOwner } from 'solid-js';
 import { store } from './store-result';
-const RECORD_ACCESSOR_SYMBOL = Symbol('rock-record-accessor');
+import { InterceptorFunction, interceptor } from './interceptor';
+const SETTER_INTERCEPTOR_MAP_KEY = Symbol('rock-setter-interceptors-map');
 
 interface ObserverableObject {
     [key: MemberKey]: () => unknown;
-}
-
-function noop() {
-    // PASS
 }
 
 export function beforeInstantiation<T>(constructor: Newable<T>) {
     const metadata = ClassMetadata.getInstance(constructor).reader();
     const members = metadata.getAllMarkedMembers();
     defineSignalProperties<T>(members, metadata, constructor);
-    constructor.prototype[RECORD_ACCESSOR_SYMBOL] = noop;
 }
 export function afterInstantiation<T extends object>(instance: T): T {
     const constructor = instance.constructor as Newable<T>;
@@ -42,20 +39,52 @@ export function afterInstantiation<T extends object>(instance: T): T {
             return observeOptions ? [key, observeOptions] : undefined;
         })
         .filter(Boolean) as Array<[MemberKey, ObserveOptions]>;
-    if (observerMembers.length < 1) {
-        return instance;
-    }
-    const owner = getOwner();
-    runWithOwner(owner, () => {
-        observerMembers.forEach(([key]) => {
-            createEffect(() => {
-                const ret = (instance as ObserverableObject)[key].call(
-                    instance
-                );
-                store(instance, key, ret);
+    if (observerMembers.length >= 1) {
+        const owner = getOwner();
+        runWithOwner(owner, () => {
+            observerMembers.forEach(([key]) => {
+                createEffect(() => {
+                    const ret = (instance as ObserverableObject)[key].call(
+                        instance
+                    );
+                    store(instance, key, ret);
+                });
             });
         });
+    }
+
+    const setterInterceptorMembers = Array.from(members)
+        .map(key => {
+            const markInfo = metadata.getMembersMarkInfo(key);
+            const interceptorOptions = markInfo[
+                SETTER_INTERCEPTOR_METHOD_MARK_KEY
+            ] as string | symbol | SetterInterceptorOptions | undefined;
+            if (!interceptorOptions) {
+                return;
+            }
+            switch (typeof interceptorOptions) {
+                case 'string':
+                case 'symbol':
+                    return [
+                        key,
+                        {
+                            key: interceptorOptions
+                        }
+                    ];
+                case 'object':
+                    return [key, interceptorOptions];
+            }
+        })
+        .filter(Boolean) as Array<[MemberKey, SetterInterceptorOptions]>;
+    const map = new Map<MemberKey, InterceptorFunction<T>>();
+    setterInterceptorMembers.forEach(([member, options]) => {
+        const leftInterceptor = map.get(options.key);
+        map.set(
+            options.key,
+            interceptor(leftInterceptor, constructor.prototype[member])
+        );
     });
+    constructor.prototype[SETTER_INTERCEPTOR_MAP_KEY] = map;
     return instance;
 }
 
@@ -65,6 +94,9 @@ function defineSignalProperties<T>(
     constructor: Newable<T>
 ) {
     const signalsMap = new SignalMap();
+    const interceptorMap = constructor.prototype[
+        SETTER_INTERCEPTOR_MAP_KEY
+    ] as Map<MemberKey, InterceptorFunction<T>>;
     members.forEach(key => {
         const markInfo = metadata.getMembersMarkInfo(key);
         const signalMarkInfo = markInfo[SIGNAL_MARK_KEY];
@@ -84,12 +116,12 @@ function defineSignalProperties<T>(
             Object.defineProperty(constructor.prototype, key, {
                 get: function () {
                     const [get] = signalsMap.get(this, key);
-                    this[RECORD_ACCESSOR_SYMBOL].call(this, get);
                     return get();
                 },
                 set: function (value: unknown) {
                     const [, set] = signalsMap.get(this, key);
-                    set(value);
+                    const interceptor = interceptorMap.get(key);
+                    set(interceptor ? interceptor.call(this, value) : value);
                 }
             });
         }
