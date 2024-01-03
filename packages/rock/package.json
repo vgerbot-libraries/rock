@@ -38,7 +38,7 @@
     "url": "https://github.com/vgerbot-libraries/rock/issues"
   },
   "dependencies": {
-    "@vgerbot/ioc": "^1.0.0-alpha.4",
+    "@vgerbot/ioc": "^1.0.1",
     "reflect-metadata": "^0.2.1",
     "solid-js": "^1.8.7"
   },

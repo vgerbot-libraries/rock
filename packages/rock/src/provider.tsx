@@ -1,6 +1,6 @@
 import { ApplicationContext } from '@vgerbot/ioc';
 import { ParentProps, createContext } from 'solid-js';
-import { RockIoCInstanceAwareProcessor } from './RockIoCInstanceAwareProcessor';
+import { afterInstantiation, beforeInstantiation } from './processor';
 
 export const IoCContext = createContext<ApplicationContext>();
 
@@ -10,7 +10,8 @@ export type RockProps = ParentProps<{
 
 export function Rock(props: RockProps) {
     const appCtx = new ApplicationContext();
-    appCtx.registerInstAwareProcessor(RockIoCInstanceAwareProcessor);
+    appCtx.registerBeforeInstantiationProcessor(beforeInstantiation);
+    appCtx.registerAfterInstantiationProcessor(afterInstantiation);
     if (typeof props.init === 'function') {
         props.init(appCtx);
     }

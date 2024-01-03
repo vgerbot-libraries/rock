@@ -1,4 +1,4 @@
-import { Observe, Signal } from '@vgerbot/rock';
+import { Observe, Signal, Interceptor } from '@vgerbot/rock';
 
 export interface TodoItem {
     title: string;
@@ -27,5 +27,9 @@ export class TodoService {
     @Observe()
     storeOnTaskChange() {
         localStorage.setItem('todo', JSON.stringify(this.tasks));
+    }
+    @Interceptor('tasks')
+    validateNewTask(newTasks: TodoItem[]) {
+        return newTasks;
     }
 }
