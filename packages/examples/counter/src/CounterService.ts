@@ -1,4 +1,4 @@
-import { Observe, Signal, resultOf } from '@vgerbot/rock';
+import { Observe, Signal, resultOf } from '@vgerbot/solidium';
 
 export class CounterService {
     @Signal

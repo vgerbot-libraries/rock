@@ -1,12 +1,12 @@
 import { Newable } from '@vgerbot/ioc';
 import { useContext } from 'solid-js';
 import { IoCContext } from './provider';
-import { MissingRockContextError } from './error';
+import { MissingSolidiumContextError } from './error';
 
 export function useService<T>(cls: Newable<T>): T {
     const context = useContext(IoCContext);
     if (!context) {
-        throw new MissingRockContextError();
+        throw new MissingSolidiumContextError();
     }
     return context.getInstance(cls);
 }

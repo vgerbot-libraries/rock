@@ -1,4 +1,4 @@
-import { useService } from '@vgerbot/rock';
+import { useService } from '@vgerbot/solidium';
 import { TodoService } from './TodoService';
 
 export function Todo() {

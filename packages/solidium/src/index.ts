@@ -1,4 +1,4 @@
-export { Rock } from './provider';
+export { Solidium } from './provider';
 export {
     Signal,
     Observe,

@@ -23,7 +23,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/vgerbot-libraries/rock.git"
+        "url": "git+https://github.com/vgerbot-libraries/solidium.git"
     },
     "keywords": [],
     "author": "",
@@ -73,9 +73,9 @@
         "zx": "^7.0.8"
     },
     "bugs": {
-        "url": "https://github.com/vgerbot-libraries/rock/issues"
+        "url": "https://github.com/vgerbot-libraries/solidium/issues"
     },
-    "homepage": "https://github.com/vgerbot-libraries/rock#readme",
+    "homepage": "https://github.com/vgerbot-libraries/solidium#readme",
     "packageManager": "yarn@1.22.19",
     "workspaces": [
         "packages/*",

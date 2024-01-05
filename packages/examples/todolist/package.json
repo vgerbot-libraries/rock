@@ -1,10 +1,10 @@
 {
-    "name": "@vgerbot/rock-examples-todo",
+    "name": "@vgerbot/solidium-examples-todo",
     "version": "1.0.0",
     "private": "true",
     "browser": "dist/index.js",
     "dependencies": {
-        "@vgerbot/rock": "1.0.0",
+        "@vgerbot/solidium": "1.0.0",
         "solid-js": "^1.8.7"
     }
 }

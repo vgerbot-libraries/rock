@@ -1,14 +1,15 @@
 {
-  "name": "@vgerbot/rock",
+  "name": "@vgerbot/solidium",
   "version": "1.0.0",
-  "description": "A state management library for SolidJS, Rockjs leverages the power of Inversion of Control (IoC) to provide a robust and flexible solution. With a primary focus on promoting the separation of UI and logic, rockjs empowers SolidJS developers to achieve cleaner, more maintainable code.",
+  "description": "A state management library for SolidJS, Solidium leverages the power of Inversion of Control (IoC) to provide a robust and flexible solution. With a primary focus on promoting the separation of UI and logic, Solidium empowers SolidJS developers to achieve cleaner, more maintainable code.",
   "author": "y1j2x34 <y1j2x34@qq.com>",
-  "homepage": "https://github.com/vgerbot-libraries/rock/tree/main/packages/core#readme",
+  "homepage": "https://github.com/vgerbot-libraries/solidium/tree/main/packages/core#readme",
   "license": "MIT",
   "main": "lib/index.cjs.js",
   "browser": "lib/index.umd.js",
   "module": "lib/index.es.js",
   "typings": "lib/index.d.ts",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": "./lib/index.es.js",
@@ -16,7 +17,7 @@
       "require": "./lib/index.cjs.js"
     }
   },
-  "library": "Rock",
+  "library": "Solidium",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -29,13 +30,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vgerbot-libraries/rock.git"
+    "url": "git+https://github.com/vgerbot-libraries/solidium.git"
   },
   "scripts": {
     "prebuild": "zx ../../scripts/clear.mjs -- ./lib"
   },
   "bugs": {
-    "url": "https://github.com/vgerbot-libraries/rock/issues"
+    "url": "https://github.com/vgerbot-libraries/solidium/issues"
   },
   "dependencies": {
     "@vgerbot/ioc": "^1.0.1",

@@ -1,9 +1,9 @@
 import { Mark } from '@vgerbot/ioc';
 
-export const SIGNAL_MARK_KEY = Symbol('rock_mark_as_signal_property');
-export const OBSERVE_PROPERTY_MARK_KEY = Symbol('rock_observed_property');
+export const SIGNAL_MARK_KEY = Symbol('solidium_mark_as_signal_property');
+export const OBSERVE_PROPERTY_MARK_KEY = Symbol('solidium_observed_property');
 export const SETTER_INTERCEPTOR_METHOD_MARK_KEY = Symbol(
-    'rock_setter_interceptor_method'
+    'solidium_setter_interceptor_method'
 );
 
 export const Signal = Mark(SIGNAL_MARK_KEY, true) as PropertyDecorator;

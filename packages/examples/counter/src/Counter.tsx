@@ -1,5 +1,5 @@
 import { CounterService } from './CounterService';
-import { useService } from '@vgerbot/rock';
+import { useService } from '@vgerbot/solidium';
 
 export function Counter() {
     const service = useService(CounterService);

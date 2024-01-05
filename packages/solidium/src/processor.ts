@@ -15,7 +15,7 @@ import { SignalMap } from './SignalMap';
 import { createEffect, getOwner, runWithOwner } from 'solid-js';
 import { store } from './store-result';
 import { InterceptorFunction, interceptor } from './interceptor';
-const SETTER_INTERCEPTOR_MAP_KEY = Symbol('rock-setter-interceptors-map');
+const SETTER_INTERCEPTOR_MAP_KEY = Symbol('solidium-setter-interceptors-map');
 
 interface ObserverableObject {
     [key: MemberKey]: () => unknown;

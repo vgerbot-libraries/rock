@@ -1,4 +1,4 @@
-import { Observe, Signal, Interceptor } from '@vgerbot/rock';
+import { Observe, Signal, Interceptor } from '@vgerbot/solidium';
 
 export interface TodoItem {
     title: string;

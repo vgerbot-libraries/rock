@@ -4,11 +4,11 @@ import { afterInstantiation, beforeInstantiation } from './processor';
 
 export const IoCContext = createContext<ApplicationContext>();
 
-export type RockProps = ParentProps<{
+export type SolidiumProps = ParentProps<{
     init?: (appCtx: ApplicationContext) => void;
 }>;
 
-export function Rock(props: RockProps) {
+export function Solidium(props: SolidiumProps) {
     const appCtx = new ApplicationContext();
     appCtx.registerBeforeInstantiationProcessor(beforeInstantiation);
     appCtx.registerAfterInstantiationProcessor(afterInstantiation);

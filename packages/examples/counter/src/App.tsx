@@ -1,10 +1,10 @@
-import { Rock } from '@vgerbot/rock';
+import { Solidium } from '@vgerbot/solidium';
 import { Counter } from './Counter';
 
 export function App() {
     return (
-        <Rock>
+        <Solidium>
             <Counter></Counter>
-        </Rock>
+        </Solidium>
     );
 }
