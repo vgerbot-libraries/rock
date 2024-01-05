@@ -94,9 +94,9 @@ function defineSignalProperties<T>(
     constructor: Newable<T>
 ) {
     const signalsMap = new SignalMap();
-    const interceptorMap = constructor.prototype[
-        SETTER_INTERCEPTOR_MAP_KEY
-    ] as Map<MemberKey, InterceptorFunction<T>>;
+    const interceptorMap = constructor.prototype[SETTER_INTERCEPTOR_MAP_KEY] as
+        | Map<MemberKey, InterceptorFunction<T>>
+        | undefined;
     members.forEach(key => {
         const markInfo = metadata.getMembersMarkInfo(key);
         const signalMarkInfo = markInfo[SIGNAL_MARK_KEY];
@@ -120,7 +120,7 @@ function defineSignalProperties<T>(
                 },
                 set: function (value: unknown) {
                     const [, set] = signalsMap.get(this, key);
-                    const interceptor = interceptorMap.get(key);
+                    const interceptor = interceptorMap?.get(key);
                     set(interceptor ? interceptor.call(this, value) : value);
                 }
             });
