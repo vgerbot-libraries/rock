@@ -1,6 +1,9 @@
 import { ClassMetadataReader, Mark, MemberKey, Newable } from '@vgerbot/ioc';
-import { DecoratorHandler, IS_DECORATOR_HANDLER } from '../DecoratorHandler';
-import { InterceptorFunction, interceptor } from '../interceptor';
+import {
+    DecoratorHandler,
+    IS_DECORATOR_HANDLER
+} from '../core/DecoratorHandler';
+import { InterceptorFunction, interceptor } from '../common/interceptor';
 
 export const SETTER_INTERCEPTOR_METHOD_MARK_KEY = Symbol(
     'solidium_setter_interceptor_method'

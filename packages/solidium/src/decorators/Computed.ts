@@ -1,5 +1,8 @@
 import { Mark, MemberKey } from '@vgerbot/ioc';
-import { DecoratorHandler, IS_DECORATOR_HANDLER } from '../DecoratorHandler';
+import {
+    DecoratorHandler,
+    IS_DECORATOR_HANDLER
+} from '../core/DecoratorHandler';
 import { createMemo, createSignal, untrack } from 'solid-js';
 
 export const COMPUTED_GETTER_MARK_KEY = Symbol('solidium_computed_getter');

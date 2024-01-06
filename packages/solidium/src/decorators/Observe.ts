@@ -1,7 +1,10 @@
 import { Mark, MemberKey } from '@vgerbot/ioc';
-import { DecoratorHandler, IS_DECORATOR_HANDLER } from '../DecoratorHandler';
+import {
+    DecoratorHandler,
+    IS_DECORATOR_HANDLER
+} from '../core/DecoratorHandler';
 import { createEffect, onCleanup } from 'solid-js';
-import { clean, store } from '../store-result';
+import { clean, store } from '../common/store-result';
 
 export const OBSERVE_PROPERTY_MARK_KEY = Symbol('solidium_observed_property');
 export type ObserveOptions = {

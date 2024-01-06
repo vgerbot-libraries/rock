@@ -1,4 +1,4 @@
-export { Solidium } from './provider';
+export { Solidium } from './core/provider';
 export * from './decorators';
-export { resultOf } from './store-result';
-export { useService } from './useService';
+export { resultOf } from './common/store-result';
+export { useService } from './hooks/useService';

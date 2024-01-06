@@ -1,8 +1,11 @@
 import { Mark, MemberKey, Newable } from '@vgerbot/ioc';
-import { DecoratorHandler, IS_DECORATOR_HANDLER } from '../DecoratorHandler';
-import { SignalMap } from '../SignalMap';
+import {
+    DecoratorHandler,
+    IS_DECORATOR_HANDLER
+} from '../core/DecoratorHandler';
+import { SignalMap } from '../common/SignalMap';
 import { SETTER_INTERCEPTOR_MAP_KEY } from './SetterInterceptor';
-import { InterceptorFunction } from '../interceptor';
+import { InterceptorFunction } from '../common/interceptor';
 
 export const SIGNAL_MARK_KEY = Symbol('solidium_mark_as_signal_property');
 

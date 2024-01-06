@@ -1,4 +1,8 @@
-export type InterceptorFunction<T> = (this: T, oldValue: unknown, newValue: unknown) => unknown;
+export type InterceptorFunction<T> = (
+    this: T,
+    oldValue: unknown,
+    newValue: unknown
+) => unknown;
 
 export function interceptor<T>(
     before: InterceptorFunction<T> | undefined,
@@ -9,6 +13,10 @@ export function interceptor<T>(
     }
     return function (this: T, oldValue: unknown, newValue: unknown) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return after.call(this, oldValue, before!.call(this, oldValue, newValue));
+        return after.call(
+            this,
+            oldValue,
+            before!.call(this, oldValue, newValue)
+        );
     };
 }

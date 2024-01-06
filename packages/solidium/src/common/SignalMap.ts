@@ -5,7 +5,11 @@ export class SignalMap {
         Object,
         Map<string | number | symbol, Signal<unknown>>
     >();
-    get(object: Object, key: string | number | symbol, initValue?: unknown): Signal<unknown> {
+    get(
+        object: Object,
+        key: string | number | symbol,
+        initValue?: unknown
+    ): Signal<unknown> {
         if (object === null || typeof object !== 'object') {
             throw new Error('');
         }
@@ -21,7 +25,7 @@ export class SignalMap {
     }
     delete(object: Object, key: string | number | symbol) {
         const signalMap = this.store.get(object);
-        if(signalMap) {
+        if (signalMap) {
             signalMap.delete(key);
         }
     }
