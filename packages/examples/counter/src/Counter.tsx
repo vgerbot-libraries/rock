@@ -5,9 +5,20 @@ export function Counter() {
     const service = useService(CounterService);
     return (
         <div>
-            {service.dbl}
-            <hr></hr>
-            <CounterControl />
+            <ul>
+                <dl>
+                    <dt>count: </dt>
+                    <dd>{service.count}</dd>
+                </dl>
+                <dl>
+                    <dt>double: </dt>
+                    <dd>{service.double}</dd>
+                </dl>
+                <dl>
+                    <dt>fibonacci: </dt>
+                    <dd>{service.fib}</dd>
+                </dl>
+            </ul>
         </div>
     );
 }
