@@ -7,6 +7,7 @@ import babel from '@rollup/plugin-babel';
 import typescript from 'rollup-plugin-typescript2';
 import html from '@rollup/plugin-html';
 import serve from '@rollup-extras/plugin-serve';
+import alias from '@rollup/plugin-alias';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkg = require(path.resolve(process.cwd(), 'package.json'));
@@ -15,8 +16,6 @@ const inputFile = path.resolve(process.cwd(), 'src/index.ts');
 
 const isServingExamples =
     process.env.NODE_ENV === 'development' && pkg.name.indexOf('examples') > -1;
-
-console.log('isServingExamples', isServingExamples);
 
 const outputConfig = [
     [pkg.browser, 'umd'],
@@ -31,6 +30,10 @@ const extensions = ['.ts', '.tsx', '.js', '.jsx'];
 const rollupConfig: RollupOptions = {
     output: outputConfig,
     input: inputFile,
+    watch: process.env.NODE_ENV === 'development' && {
+        include: /src/,
+        exclude: /node_modules/
+    },
     plugins: [
         nodeResolve({
             mainFields: ['module', 'browser', 'main'],
@@ -57,7 +60,12 @@ const rollupConfig: RollupOptions = {
             serve({
                 port: Number(process.env.SERVE_PORT),
                 dirs: 'dist'
-            })
+            }),
+        isServingExamples && alias({
+            entries: [{
+                find: '@vgerbot/solidium', replacement: path.resolve(process.cwd(), '../../solidium/src/index.ts')
+            }]
+        })
     ].filter(Boolean),
     external: isServingExamples ? [] : new RegExp('node_modules|' + pkg.name)
 };
