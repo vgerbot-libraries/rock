@@ -1,7 +1,7 @@
 import { Mark, MemberKey } from '@vgerbot/ioc';
 import {
-    DecoratorHandler,
-    IS_DECORATOR_HANDLER
+    MemberDecoratorHandler,
+    IS_MEMBER_DECORATOR_HANDLER
 } from '../core/DecoratorHandler';
 import { createEffect, onCleanup } from 'solid-js';
 import { clean, store } from '../common/store-result';
@@ -16,7 +16,7 @@ interface ObserverableObject {
 
 export const Observe = (options: ObserveOptions = { collectOnce: false }) =>
     Mark(OBSERVE_PROPERTY_MARK_KEY, {
-        [IS_DECORATOR_HANDLER]: true,
+        [IS_MEMBER_DECORATOR_HANDLER]: true,
         afterInstantiation(instance, methodName) {
             createEffect(() => {
                 const ret = (instance as ObserverableObject)[methodName].call(
@@ -29,4 +29,4 @@ export const Observe = (options: ObserveOptions = { collectOnce: false }) =>
             });
             return instance;
         }
-    } as DecoratorHandler) as MethodDecorator;
+    } as MemberDecoratorHandler) as MethodDecorator;

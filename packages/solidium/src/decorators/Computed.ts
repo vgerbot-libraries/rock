@@ -1,7 +1,7 @@
 import { Mark, MemberKey } from '@vgerbot/ioc';
 import {
-    DecoratorHandler,
-    IS_DECORATOR_HANDLER
+    MemberDecoratorHandler,
+    IS_MEMBER_DECORATOR_HANDLER
 } from '../core/DecoratorHandler';
 import { createMemo, createSignal, untrack } from 'solid-js';
 
@@ -10,7 +10,7 @@ export const COMPUTED_GETTER_MARK_KEY = Symbol('solidium_computed_getter');
 const NOT_CHANGED_SYMBOL = Symbol('solidium-not-change-symbol');
 
 export const Computed = Mark(COMPUTED_GETTER_MARK_KEY, {
-    [IS_DECORATOR_HANDLER]: true,
+    [IS_MEMBER_DECORATOR_HANDLER]: true,
     afterInstantiation: <T>(instance: T, member: MemberKey): T => {
         const prototype = Object.getPrototypeOf(instance);
         const descriptor = Object.getOwnPropertyDescriptor(prototype, member);
@@ -49,4 +49,4 @@ export const Computed = Mark(COMPUTED_GETTER_MARK_KEY, {
         });
         return instance;
     }
-} as DecoratorHandler) as PropertyDecorator;
+} as MemberDecoratorHandler) as PropertyDecorator;

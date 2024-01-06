@@ -1,8 +1,10 @@
 import { ClassMetadataReader, MemberKey, Newable } from '@vgerbot/ioc';
 
-export const IS_DECORATOR_HANDLER = Symbol('solidium-is-decorator-handler');
-export interface DecoratorHandler {
-    [IS_DECORATOR_HANDLER]: true;
+export const IS_MEMBER_DECORATOR_HANDLER = Symbol(
+    'solidium-is-member-decorator-handler'
+);
+export interface MemberDecoratorHandler {
+    [IS_MEMBER_DECORATOR_HANDLER]: true;
     beforeInstantiation?: <T>(
         constructor: Newable<T>,
         member: MemberKey,

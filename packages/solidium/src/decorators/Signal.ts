@@ -1,7 +1,7 @@
 import { Mark, MemberKey, Newable } from '@vgerbot/ioc';
 import {
-    DecoratorHandler,
-    IS_DECORATOR_HANDLER
+    MemberDecoratorHandler,
+    IS_MEMBER_DECORATOR_HANDLER
 } from '../core/DecoratorHandler';
 import { SignalMap } from '../common/SignalMap';
 import { SETTER_INTERCEPTOR_MAP_KEY } from './SetterInterceptor';
@@ -12,7 +12,7 @@ export const SIGNAL_MARK_KEY = Symbol('solidium_mark_as_signal_property');
 const signalMap = new SignalMap();
 
 export const Signal = Mark(SIGNAL_MARK_KEY, {
-    [IS_DECORATOR_HANDLER]: true,
+    [IS_MEMBER_DECORATOR_HANDLER]: true,
     beforeInstantiation: function <T>(
         constructor: Newable<T>,
         member: MemberKey
@@ -43,4 +43,4 @@ export const Signal = Mark(SIGNAL_MARK_KEY, {
             }
         });
     }
-} as DecoratorHandler) as PropertyDecorator;
+} as MemberDecoratorHandler) as PropertyDecorator;

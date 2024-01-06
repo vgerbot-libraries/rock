@@ -1,16 +1,19 @@
 import { ClassMetadata, MemberKey, Newable } from '@vgerbot/ioc';
-import { DecoratorHandler, IS_DECORATOR_HANDLER } from './DecoratorHandler';
+import {
+    MemberDecoratorHandler,
+    IS_MEMBER_DECORATOR_HANDLER
+} from './DecoratorHandler';
 
 const SOLIDIUM_ANNOTATION_PROCESSOR_KEY = Symbol(
     'solidium-annotation-processors'
 );
 
-type AllProcessorsMap = Map<MemberKey, Set<DecoratorHandler>>;
+type AllProcessorsMap = Map<MemberKey, Set<MemberDecoratorHandler>>;
 
 export function beforeInstantiation<T>(constructor: Newable<T>) {
     const metadata = ClassMetadata.getInstance(constructor).reader();
     const members = metadata.getAllMarkedMembers();
-    const allProcessors = new Map<MemberKey, Set<DecoratorHandler>>();
+    const allProcessors = new Map<MemberKey, Set<MemberDecoratorHandler>>();
     members.forEach(member => {
         const markInfo = metadata.getMembersMarkInfo(member);
         if (!markInfo) {
@@ -21,12 +24,14 @@ export function beforeInstantiation<T>(constructor: Newable<T>) {
             ...Object.getOwnPropertySymbols(markInfo)
         ];
         markInfoMembers.forEach(key => {
-            const markData = markInfo[key] as DecoratorHandler | undefined;
+            const markData = markInfo[key] as
+                | MemberDecoratorHandler
+                | undefined;
             if (
                 markData == null ||
                 markData == undefined ||
                 typeof markData !== 'object' ||
-                !markData[IS_DECORATOR_HANDLER]
+                !markData[IS_MEMBER_DECORATOR_HANDLER]
             ) {
                 return;
             }

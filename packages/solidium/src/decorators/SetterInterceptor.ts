@@ -1,7 +1,7 @@
 import { ClassMetadataReader, Mark, MemberKey, Newable } from '@vgerbot/ioc';
 import {
-    DecoratorHandler,
-    IS_DECORATOR_HANDLER
+    MemberDecoratorHandler,
+    IS_MEMBER_DECORATOR_HANDLER
 } from '../core/DecoratorHandler';
 import { InterceptorFunction, interceptor } from '../common/interceptor';
 
@@ -29,7 +29,7 @@ export const SetterInterceptor = (
             key = options.key;
     }
     return Mark(SETTER_INTERCEPTOR_METHOD_MARK_KEY, {
-        [IS_DECORATOR_HANDLER]: true,
+        [IS_MEMBER_DECORATOR_HANDLER]: true,
         beforeInstantiation: <T>(
             constructor: Newable<T>,
             member: MemberKey,
@@ -59,5 +59,5 @@ export const SetterInterceptor = (
             );
             interceptorsMap.set(key, newInterceptor);
         }
-    } as DecoratorHandler) as MethodDecorator;
+    } as MemberDecoratorHandler) as MethodDecorator;
 };
