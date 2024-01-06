@@ -12,7 +12,7 @@ import {
     SetterInterceptorOptions
 } from './annotations';
 import { SignalMap } from './SignalMap';
-import { createEffect, getOwner, runWithOwner } from 'solid-js';
+import { createEffect, createMemo, getOwner, runWithOwner } from 'solid-js';
 import { store } from './store-result';
 import { InterceptorFunction, interceptor } from './interceptor';
 const SETTER_INTERCEPTOR_MAP_KEY = Symbol('solidium-setter-interceptors-map');
@@ -25,7 +25,55 @@ export function beforeInstantiation<T>(constructor: Newable<T>) {
     const metadata = ClassMetadata.getInstance(constructor).reader();
     const members = metadata.getAllMarkedMembers();
     defineSignalProperties<T>(members, metadata, constructor);
+
+    collectInterceptorMembers<T>(members, metadata, constructor);
+
+    defineComputedProperties(members, metadata, constructor);
 }
+
+function collectInterceptorMembers<T>(
+    members: Set<MemberKey>,
+    metadata: ClassMetadataReader<any>,
+    constructor: Newable<T>
+) {
+    const setterInterceptorMembers = Array.from(members)
+        .map(key => {
+            const markInfo = metadata.getMembersMarkInfo(key);
+            const interceptorOptions = markInfo[
+                SETTER_INTERCEPTOR_METHOD_MARK_KEY
+            ] as string | symbol | SetterInterceptorOptions | undefined;
+            if (!interceptorOptions) {
+                return;
+            }
+            switch (typeof interceptorOptions) {
+                case 'string':
+                case 'symbol':
+                    return [
+                        key,
+                        {
+                            key: interceptorOptions
+                        }
+                    ];
+                case 'object':
+                    return [key, interceptorOptions];
+            }
+        })
+        .filter(Boolean) as Array<[MemberKey, SetterInterceptorOptions]>;
+    const interceptorsMap = new Map<MemberKey, InterceptorFunction<T>>();
+    setterInterceptorMembers.forEach(([member, options]) => {
+        const leftInterceptor = interceptorsMap.get(options.key);
+        interceptorsMap.set(
+            options.key,
+            interceptor(leftInterceptor, constructor.prototype[member])
+        );
+    });
+    Object.defineProperty(constructor.prototype, SETTER_INTERCEPTOR_MAP_KEY, {
+        value: interceptorsMap,
+        enumerable: false,
+        writable: false
+    });
+}
+
 export function afterInstantiation<T extends object>(instance: T): T {
     const constructor = instance.constructor as Newable<T>;
     const metadata = ClassMetadata.getInstance(constructor).reader();
@@ -53,39 +101,48 @@ export function afterInstantiation<T extends object>(instance: T): T {
         });
     }
 
-    const setterInterceptorMembers = Array.from(members)
-        .map(key => {
-            const markInfo = metadata.getMembersMarkInfo(key);
-            const interceptorOptions = markInfo[
-                SETTER_INTERCEPTOR_METHOD_MARK_KEY
-            ] as string | symbol | SetterInterceptorOptions | undefined;
-            if (!interceptorOptions) {
-                return;
-            }
-            switch (typeof interceptorOptions) {
-                case 'string':
-                case 'symbol':
-                    return [
-                        key,
-                        {
-                            key: interceptorOptions
-                        }
-                    ];
-                case 'object':
-                    return [key, interceptorOptions];
-            }
-        })
-        .filter(Boolean) as Array<[MemberKey, SetterInterceptorOptions]>;
-    const map = new Map<MemberKey, InterceptorFunction<T>>();
-    setterInterceptorMembers.forEach(([member, options]) => {
-        const leftInterceptor = map.get(options.key);
-        map.set(
-            options.key,
-            interceptor(leftInterceptor, constructor.prototype[member])
-        );
-    });
-    constructor.prototype[SETTER_INTERCEPTOR_MAP_KEY] = map;
     return instance;
+}
+
+function defineComputedProperties<T>(
+    members: Set<MemberKey>,
+    metadata: ClassMetadataReader<unknown>,
+    constructor: Newable<T>
+) {
+    members.forEach(key => {
+        const markInfo = metadata.getMembersMarkInfo(key);
+        const signalMarkInfo = markInfo[SIGNAL_MARK_KEY];
+        if (!signalMarkInfo) {
+            return;
+        }
+        const descriptor = Object.getOwnPropertyDescriptor(
+            constructor.prototype,
+            key
+        );
+        const originGetter = descriptor?.get;
+        const hasGetter = !!originGetter;
+        const hasSetter = !!descriptor?.set;
+        if (!hasGetter) {
+            // IGNORE
+            return;
+        }
+        if (hasSetter) {
+            // WARNING
+            return;
+        }
+        function computed(this: T) {
+            const getter = createMemo(() => originGetter!.call(this));
+            Object.defineProperty(this, key, {
+                ...descriptor,
+                get: getter
+            });
+            return getter();
+        }
+        Object.defineProperty(constructor.prototype, key, {
+            ...descriptor,
+            get: computed
+        });
+    });
 }
 
 function defineSignalProperties<T>(
