@@ -1,6 +1,6 @@
 import { Mark, MemberKey } from '@vgerbot/ioc';
 import { DecoratorHandler, IS_DECORATOR_HANDLER } from '../DecoratorHandler';
-import { createMemo, createSignal } from 'solid-js';
+import { createMemo, createSignal, untrack } from 'solid-js';
 
 export const COMPUTED_GETTER_MARK_KEY = Symbol('solidium_computed_getter');
 
@@ -38,8 +38,8 @@ export const Computed = Mark(COMPUTED_GETTER_MARK_KEY, {
         Object.defineProperty(instance, member, {
             ...descriptor,
             get: function () {
-                if (get() == NOT_CHANGED_SYMBOL) {
-                    emitChange(performance.now());
+                if (untrack(get) == NOT_CHANGED_SYMBOL) {
+                    emitChange(null);
                 }
                 return getter();
             }
