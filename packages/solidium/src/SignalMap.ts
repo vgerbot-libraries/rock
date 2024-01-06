@@ -19,4 +19,10 @@ export class SignalMap {
         }
         return signal;
     }
+    delete(object: Object, key: string | number | symbol) {
+        const signalMap = this.store.get(object);
+        if(signalMap) {
+            signalMap.delete(key);
+        }
+    }
 }

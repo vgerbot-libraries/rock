@@ -8,6 +8,10 @@ export function store(instance: Object, methodName: MemberKey, value: unknown) {
     set(value);
 }
 
+export function clean(instance: Object, methodName: MemberKey) {
+    RESULT_MAP.delete(instance, methodName);
+}
+
 type MethodKeys<T> = {
     [K in keyof T]: T[K] extends (...args: unknown[]) => unknown ? K : never;
 }[keyof T];
