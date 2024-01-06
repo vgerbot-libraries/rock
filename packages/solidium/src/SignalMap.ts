@@ -5,7 +5,7 @@ export class SignalMap {
         Object,
         Map<string | number | symbol, Signal<unknown>>
     >();
-    get(object: Object, key: string | number | symbol): Signal<unknown> {
+    get(object: Object, key: string | number | symbol, initValue?: unknown): Signal<unknown> {
         if (object === null || typeof object !== 'object') {
             throw new Error('');
         }
@@ -15,7 +15,7 @@ export class SignalMap {
         }
         let signal = signalMap.get(key);
         if (!signal) {
-            signalMap.set(key, (signal = createSignal()));
+            signalMap.set(key, (signal = createSignal(initValue)));
         }
         return signal;
     }

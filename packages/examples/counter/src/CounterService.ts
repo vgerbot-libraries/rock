@@ -1,11 +1,12 @@
-import { Observe, Signal, resultOf } from '@vgerbot/solidium';
+import { Computed, Observe, Signal, resultOf } from '@vgerbot/solidium';
 
 export class CounterService {
     @Signal
-    private count: number = 0;
+    private count: number = 1000;
 
-    public get formated(): string {
-        return this.count + '个';
+    @Computed
+    public get dbl(): number {
+        return this.count * 2;
     }
 
     increment() {
@@ -18,7 +19,7 @@ export class CounterService {
     @Observe()
     watch() {
         console.log('count changed', this.count);
-        return this.formated;
+        return this.dbl;
     }
     @Observe()
     onWatchTriggered() {

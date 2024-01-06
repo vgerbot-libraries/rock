@@ -1,4 +1,4 @@
-import { ClassMetadataReader, Mark, MemberKey, Newable } from '@vgerbot/ioc';
+import { Mark, MemberKey, Newable } from '@vgerbot/ioc';
 import { DecoratorHandler, IS_DECORATOR_HANDLER } from '../DecoratorHandler';
 import { SignalMap } from '../SignalMap';
 import { SETTER_INTERCEPTOR_MAP_KEY } from './SetterInterceptor';
@@ -12,20 +12,18 @@ export const Signal = Mark(SIGNAL_MARK_KEY, {
     [IS_DECORATOR_HANDLER]: true,
     beforeInstantiation: function <T>(
         constructor: Newable<T>,
-        member: MemberKey,
-        metadata: ClassMetadataReader<T>
+        member: MemberKey
     ) {
         const prototype = constructor.prototype;
         const descriptor = Object.getOwnPropertyDescriptor(prototype, member);
         const hasGetter = !!descriptor?.get;
         const hasSetter = !!descriptor?.set;
-        const hasValue = !!descriptor && 'value' in descriptor;
-        if (hasGetter || hasSetter || !hasValue) {
+        if (hasGetter || hasSetter) {
             return;
         }
         Object.defineProperty(prototype, member, {
             get: function () {
-                const [get] = signalMap.get(this, member);
+                const [get] = signalMap.get(this, member, descriptor?.value);
                 return get();
             },
             set: function (newValue) {

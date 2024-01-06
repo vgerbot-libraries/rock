@@ -16,14 +16,22 @@ export function beforeInstantiation<T>(constructor: Newable<T>) {
     const allProcessors = new Map<MemberKey, Set<DecoratorHandler>>();
     members.forEach(member => {
         const markInfo = metadata.getMembersMarkInfo(member);
-        for(const key in markInfo) {
-            const markData = markInfo[key] as DecoratorHandler | undefined;
-            if(typeof markData === 'object' && !!markData && markData[IS_DECORATOR_HANDLER]) {
-                const processors = allProcessors.get(member) || new Set();
-                allProcessors.set(member, processors);
-                processors.add(markData);
-            }
+        if(!markInfo) {
+            return;
         }
+        const markInfoMembers = [
+            ...Object.getOwnPropertyNames(markInfo),
+            ...Object.getOwnPropertySymbols(markInfo)
+        ];
+        markInfoMembers.forEach(key => {
+            const markData = markInfo[key] as DecoratorHandler | undefined;
+            if(markData == null || markData == undefined || typeof markData !== 'object' || !markData[IS_DECORATOR_HANDLER]) {
+                return;
+            }
+            const processors = allProcessors.get(member) || new Set();
+            allProcessors.set(member, processors);
+            processors.add(markData);
+        })
     });
     if(allProcessors.size > 0) {
         Object.defineProperty(constructor, SOLIDIUM_ANNOTATION_PROCESSOR_KEY, {
@@ -32,14 +40,14 @@ export function beforeInstantiation<T>(constructor: Newable<T>) {
             writable: false,
             value: allProcessors
         });
-    }
-    allProcessors.forEach((processors, member) => {
-        processors.forEach(processor => {
-            if(processor.beforeInstantiation) {
-                processor.beforeInstantiation<T>(constructor, member, metadata)
-            }
+        allProcessors.forEach((processors, member) => {
+            processors.forEach(processor => {
+                if(processor.beforeInstantiation) {
+                    processor.beforeInstantiation<T>(constructor, member, metadata)
+                }
+            });
         });
-    });
+    }
 }
 
 
@@ -56,7 +64,7 @@ export function afterInstantiation<T extends object>(instance: T): T {
     allProcessors.forEach((processors, member) => {
         processors.forEach(processor => {
             if(processor.afterInstantiation) {
-                instance = processor.afterInstantiation(instance, member, metadata);
+                processor.afterInstantiation(instance, member, metadata);
             }
         })
     })

@@ -5,8 +5,17 @@ export function Counter() {
     const service = useService(CounterService);
     return (
         <div>
-            {service.formated}
+            {service.dbl}
             <hr></hr>
+            <CounterControl />
+        </div>
+    );
+}
+
+export function CounterControl() {
+    const service = useService(CounterService);
+    return (
+        <>
             <button
                 onClick={() => {
                     service.increment();
@@ -21,6 +30,6 @@ export function Counter() {
             >
                 Decrement
             </button>
-        </div>
+        </>
     );
 }
