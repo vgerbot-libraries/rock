@@ -5,3 +5,5 @@ export {
     SetterInterceptor,
     SetterInterceptorOptions
 } from './SetterInterceptor';
+export { Batch } from './Batch';
+export { Track } from './Track';
